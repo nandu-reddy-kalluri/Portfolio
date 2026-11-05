@@ -133,7 +133,7 @@ export default function CustomCursor() {
     if (isTouch) return null;
 
     return (
-        <div className="hidden md:block pointer-events-none">
+        <div className="hidden lg:block pointer-events-none">
             {/* Ghost Echo Squares Trail */}
             {trail.map((point) => (
                 <motion.div

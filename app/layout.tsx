@@ -1,9 +1,8 @@
 import type { Metadata, Viewport } from "next";
-import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
+// Fonts loaded via head stylesheet to prevent build timeout
 import "./globals.css";
 import ThemeProvider from "@/components/ui/ThemeProvider";
 import { LoadingProvider } from "@/components/ui/LoadingContext";
-import ThemeToggle from "@/components/ui/ThemeToggle";
 import ScrollProgress from "@/components/ui/ScrollProgress";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 import CommandPalette from "@/components/ui/CommandPalette";
@@ -12,21 +11,12 @@ import TelemetryHUD from "@/components/ui/TelemetryHUD";
 import CmdKButton from "@/components/ui/CmdKButton";
 import MagneticButton from "@/components/ui/MagneticButton";
 import Link from "next/link";
+import { MessageCircle } from "lucide-react";
 import { themeScript } from "@/lib/theme-script";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
 
-const spaceGrotesk = Space_Grotesk({
-    subsets: ["latin"],
-    variable: "--font-heading",
-    weight: ["400", "500", "600", "700"],
-});
 
-const jetbrainsMono = JetBrains_Mono({
-    subsets: ["latin"],
-    variable: "--font-mono",
-    weight: ["400", "500", "600", "700", "800"],
-});
 
 const SITE_URL = "https://github.com/nandu-reddy-kalluri";
 
@@ -81,10 +71,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-    themeColor: [
-        { media: "(prefers-color-scheme: light)", color: "#F5F1E8" },
-        { media: "(prefers-color-scheme: dark)", color: "#0A0A0A" },
-    ],
+    themeColor: "#FFFDF5",
 };
 
 export default function RootLayout({
@@ -93,7 +80,7 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en" className={`${spaceGrotesk.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
+        <html lang="en" className={`overflow-x-hidden`} suppressHydrationWarning>
             <head>
                 <script
                     dangerouslySetInnerHTML={{
@@ -101,7 +88,7 @@ export default function RootLayout({
                     }}
                 />
             </head>
-            <body className="font-mono bg-cream text-ink antialiased selection:bg-acid selection:text-ink">
+            <body className="font-mono bg-cream text-ink antialiased selection:bg-acid selection:text-ink overflow-x-hidden">
                 <LoadingProvider>
                     <ThemeProvider>
                         <CustomCursor />
@@ -110,31 +97,43 @@ export default function RootLayout({
                         <ScrollProgress />
                         <CommandPalette />
 
-                        <main className="pb-24 md:pb-20">{children}</main>
+                        <main className="pb-24 md:pb-20 overflow-x-hidden">{children}</main>
 
-                        {/* Bottom Navigation */}
-                        <nav className="fixed bottom-0 left-0 w-full bg-ink border-t-[3px] border-ink z-[100] shadow-[0px_-4px_20px_rgba(0,0,0,0.3)]">
-                            <div className="max-w-7xl mx-auto px-3 md:px-6 py-2 md:py-3 flex items-center gap-1 md:gap-2">
+                        {/* High-Contrast Obsidian Bottom Navigation Dock (No Dark Mode Toggle) */}
+                        <nav className="fixed bottom-0 left-0 w-full bg-ink border-t-[3px] border-ink z-[100] shadow-[0px_-4px_20px_rgba(0,0,0,0.28)] pb-[env(safe-area-inset-bottom)]">
+                            <div className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 py-2 md:py-3 flex items-center justify-between gap-1 md:gap-2">
                                 {/* Primary links */}
-                                <div className="flex items-center gap-1 md:gap-1 flex-1">
+                                <div className="flex items-center gap-0.5 sm:gap-1 overflow-x-auto no-scrollbar">
                                     <NavLink href="/" label="Home" />
                                     <NavLink href="/work" label="Work" />
                                     <NavLink href="/stack" label="Stack" />
-                                    <NavLink href="/services" label="Capabilities" desktopOnly />
+                                    <NavLink href="/services" label="Capabilities" />
                                 </div>
 
                                 {/* Trailing controls */}
-                                <div className="flex items-center gap-1 md:gap-2">
+                                <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
                                     <CmdKButton />
 
-                                    <ThemeToggle />
+                                    {/* Desktop Direct WhatsApp Quick Chat */}
+                                    <a
+                                        href="https://wa.me/916309718153?text=Hi%20Nanda%20Kishore%2C%20I%20saw%20your%20portfolio%20and%20want%20to%20connect%20with%20you!"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        aria-label="Chat directly on WhatsApp"
+                                        title="Chat directly on WhatsApp: +91 6309718153"
+                                        className="hidden md:inline-flex items-center gap-1.5 bg-[#25D366] text-ink px-3 py-2 font-mono font-black text-xs uppercase tracking-wider border-[2px] border-ink hover:bg-[#20bd5a] hover:-translate-y-0.5 active:translate-y-0 transition-all shadow-[2px_2px_0px_#1A1A1A] min-h-[40px]"
+                                    >
+                                        <MessageCircle size={14} className="stroke-[2.5]" />
+                                        <span>WhatsApp</span>
+                                    </a>
 
                                     <MagneticButton>
                                         <Link
                                             href="/contact"
-                                            className="bg-acid text-ink px-3 md:px-5 py-2 md:py-2.5 font-heading font-bold text-xs md:text-sm uppercase tracking-wider border-[3px] border-ink hover:bg-cream transition-colors min-h-[40px] inline-flex items-center"
+                                            className="bg-acid text-ink px-2.5 sm:px-4 md:px-5 py-1.5 sm:py-2 md:py-2.5 font-heading font-bold text-[11px] sm:text-xs md:text-sm uppercase tracking-wider border-[2px] md:border-[3px] border-ink hover:bg-[#FFD60A] transition-colors min-h-[36px] md:min-h-[40px] inline-flex items-center"
                                         >
-                                            Let&apos;s Connect
+                                            <span className="sm:hidden">Connect</span>
+                                            <span className="hidden sm:inline">Let&apos;s Connect</span>
                                         </Link>
                                     </MagneticButton>
                                 </div>
@@ -149,12 +148,12 @@ export default function RootLayout({
     );
 }
 
-function NavLink({ href, label, desktopOnly = false }: { href: string; label: string; desktopOnly?: boolean }) {
+function NavLink({ href, label }: { href: string; label: string }) {
     return (
         <MagneticButton>
             <Link
                 href={href}
-                className={`font-mono text-xs md:text-sm font-bold uppercase tracking-wider text-cream/80 hover:text-acid transition-colors px-3 md:px-4 py-2 min-h-[40px] inline-flex items-center ${desktopOnly ? "hidden md:inline-flex" : ""}`}
+                className="font-mono text-[10px] sm:text-xs md:text-sm font-bold uppercase tracking-wider text-cream/85 hover:text-acid transition-colors px-2 sm:px-3 md:px-4 py-1.5 md:py-2 min-h-[36px] md:min-h-[40px] inline-flex items-center whitespace-nowrap"
             >
                 {label}
             </Link>

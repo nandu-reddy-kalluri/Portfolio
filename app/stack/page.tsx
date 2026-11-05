@@ -1,6 +1,7 @@
 "use client";
 
 import { StatusBar, HeaderSection, CategoriesSection, CurrentlyLearningSection, CTASection } from "@/components/stack/StackPageContent";
+import { MobileStackHub } from "@/components/stack/MobileStackHub";
 
 export default function StackPage() {
     return (
@@ -11,14 +12,15 @@ export default function StackPage() {
             {/* Header */}
             <HeaderSection />
 
-            {/* ──── Categories ──── */}
-            <CategoriesSection />
+            {/* ═══ MOBILE (< lg): High-Density Tactile Arsenal Hub (1 Screen, Zero Scroll Fatigue) ═══ */}
+            <MobileStackHub />
 
-            {/* ──── Currently Learning ──── */}
-            <CurrentlyLearningSection />
-
-            {/* ──── CTA ──── */}
-            <CTASection />
+            {/* ═══ DESKTOP (lg+): Full Cartridge Matrix (Unchanged) ═══ */}
+            <div className="hidden lg:block">
+                <CategoriesSection />
+                <CurrentlyLearningSection />
+                <CTASection />
+            </div>
         </div>
     );
 }

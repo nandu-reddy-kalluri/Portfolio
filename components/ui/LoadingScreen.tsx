@@ -12,19 +12,23 @@ export default function LoadingScreen() {
     // Sync visible state with isLoading
     useEffect(() => {
         if (isLoading && !hasCompletedRef.current) {
+            const isMobile = window.innerWidth < 768;
             setVisible(true);
 
-            // Primary loading duration (intentional luxury intro)
+            // Shorter duration on mobile for fast response, luxury intro on desktop
+            const duration = isMobile ? 450 : 950;
+            const fallbackDuration = isMobile ? 850 : 1500;
+
             const mainTimer = setTimeout(() => {
                 setVisible(false);
-            }, 1100);
+            }, duration);
 
             // Guaranteed hard fallback — ensures screen NEVER gets stuck
             const hardFallback = setTimeout(() => {
                 hasCompletedRef.current = true;
                 setVisible(false);
                 finishLoading();
-            }, 1800);
+            }, fallbackDuration);
 
             return () => {
                 clearTimeout(mainTimer);

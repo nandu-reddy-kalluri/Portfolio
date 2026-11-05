@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, ArrowRight, FileDown, Home, Briefcase, Layers, Code2, Mail, X } from "lucide-react";
+import { Search, ArrowRight, FileDown, Home, Briefcase, Layers, Code2, Mail, X, MessageCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface Command {
@@ -26,6 +26,13 @@ export default function CommandPalette() {
         { id: "stack", label: "Go to Stack", icon: <Layers size={16} />, action: () => router.push("/stack"), shortcut: "S" },
         { id: "services", label: "Go to Services", icon: <Code2 size={16} />, action: () => router.push("/services") },
         { id: "contact", label: "Go to Contact", icon: <Mail size={16} />, action: () => router.push("/contact"), shortcut: "C" },
+        {
+            id: "whatsapp",
+            label: "Chat on WhatsApp Direct",
+            icon: <MessageCircle size={16} className="text-[#25D366]" />,
+            action: () => window.open("https://wa.me/916309718153?text=Hi%20Nanda%20Kishore%2C%20I%20saw%20your%20portfolio%20and%20want%20to%20connect%20with%20you!", "_blank"),
+            shortcut: "WA"
+        },
     ];
 
     const filtered = commands.filter((cmd) =>

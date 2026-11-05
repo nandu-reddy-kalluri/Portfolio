@@ -1,41 +1,75 @@
 "use client";
 
+import MobileSwipeStack, { type SwipeCardSlide } from "@/components/ui/MobileSwipeStack";
+
 const focusData = [
-    { area: "Architecture Focus", standard: "Generic templates / boilerplate", mine: "Purpose-built pipelines & structured prompt constraints" },
-    { area: "AI Integration", standard: "Superficial wrappers without validation", mine: "Structured outputs, validation gates & fallback logic" },
-    { area: "Automation", standard: "Manual handoffs & isolated scripts", mine: "End-to-end n8n workflows, webhooks & REST APIs" },
-    { area: "Code Quality", standard: "Complex unmaintainable bloat", mine: "Clean modular architecture & open-source transparency" },
-    { area: "Iteration Speed", standard: "Weeks of overhead planning", mine: "Fast working prototypes & rapid functional builds" },
+    { id: "01", area: "Architecture", standard: "Generic boilerplate", mine: "Purpose-built pipelines & prompt schemas", color: "bg-acid text-ink" },
+    { id: "02", area: "AI Integration", standard: "Unvalidated wrappers", mine: "JSON validation gates & fallback logic", color: "bg-electric text-cream" },
+    { id: "03", area: "Automation", standard: "Isolated scripts", mine: "End-to-end n8n workflows & webhooks", color: "bg-[#FF2A6D] text-cream" },
+    { id: "04", area: "Code Quality", standard: "Opaque black-box", mine: "Clean modular code & public GitHub repos", color: "bg-[#FFD60A] text-ink" },
 ];
 
 export function ComparisonSection() {
+    const mobileSlides: SwipeCardSlide[] = focusData.map((row) => ({
+        id: row.id,
+        tabLabel: `[${row.id}] ${row.area.split(" ")[0]}`,
+        headerBg: row.color,
+        badgeText: `STANDARD // ${row.id}`,
+        statusText: row.area,
+        content: (
+            <div className="space-y-2.5">
+                <div className="flex items-center justify-between gap-2 pb-2 border-b border-ink/15">
+                    <span className="font-mono text-[10px] font-bold text-ink/55 uppercase">
+                        TYPICAL APPROACH:
+                    </span>
+                    <span className="font-mono text-xs font-bold text-ink/55 uppercase line-through">
+                        {row.standard}
+                    </span>
+                </div>
+                <div>
+                    <span className="font-mono text-[10px] font-extrabold text-electric uppercase block mb-1">
+                        MY ENGINEERING STANDARD:
+                    </span>
+                    <div className="font-heading font-bold text-lg uppercase tracking-tight text-ink">
+                        ✓ {row.mine}
+                    </div>
+                </div>
+            </div>
+        ),
+    }));
+
     return (
-        <section className="max-w-7xl mx-auto px-4 md:px-8 mb-12 md:mb-20 reveal-up">
-            <div className="font-mono text-xs font-bold uppercase tracking-[0.3em] text-ink/60 mb-2">Engineering Focus</div>
-            <h2 className="font-heading font-bold text-3xl md:text-4xl uppercase tracking-tight text-ink mb-8">
+        <section className="max-w-7xl mx-auto px-4 md:px-8 mb-10 lg:mb-20 reveal-up">
+            <div className="font-mono text-xs font-extrabold uppercase tracking-[0.3em] text-ink/65 mb-1.5">
+                Engineering Standards
+            </div>
+            <h2 className="font-heading font-bold text-3xl md:text-4xl uppercase tracking-tight text-ink mb-4 lg:mb-6">
                 How I Build Systems
             </h2>
 
-            <div className="neo-card bg-cream overflow-hidden">
-                {/* Header row */}
-                <div className="grid grid-cols-3 bg-ink text-cream">
-                    <div className="p-4 font-mono text-xs font-bold uppercase tracking-wider border-r border-cream/20">
-                        Focus Area
-                    </div>
-                    <div className="p-4 font-mono text-xs font-bold uppercase tracking-wider text-center border-r border-cream/20 text-cream/70">
-                        Generic Approach
-                    </div>
-                    <div className="p-4 font-mono text-xs font-bold uppercase tracking-wider text-center text-acid">
-                        My Approach
-                    </div>
-                </div>
+            {/* ─── MOBILE ONLY (< lg): 3D Tinder Swipe Stack [01]–[04] ─── */}
+            <div className="lg:hidden">
+                <MobileSwipeStack
+                    slides={mobileSlides}
+                    instructionLabel="SWIPE STANDARD [01–04] ↔"
+                />
+            </div>
 
-                {/* Rows */}
-                {focusData.map((row, i) => (
-                    <div key={i} className={`grid grid-cols-3 ${i % 2 === 0 ? "bg-cream" : "bg-ink/[0.03]"} border-t-[2px] border-ink/10`}>
-                        <div className="p-4 font-mono text-xs md:text-sm font-bold text-ink">{row.area}</div>
-                        <div className="p-4 font-mono text-xs md:text-sm text-ink/70 text-center border-x-[2px] border-ink/10">{row.standard}</div>
-                        <div className="p-4 font-mono text-xs md:text-sm font-bold text-ink text-center text-acid-contrast">{row.mine}</div>
+            {/* ─── DESKTOP ONLY (lg+): 2x2 Grid (Unchanged) ─── */}
+            <div className="hidden lg:grid lg:grid-cols-2 gap-4">
+                {focusData.map((row) => (
+                    <div key={row.area} className="neo-card bg-cream text-ink p-4 sm:p-5">
+                        <div className="flex items-center justify-between gap-2 mb-3">
+                            <span className={`px-2.5 py-0.5 ${row.color} border-[2px] border-ink font-mono text-[10px] font-extrabold uppercase`}>
+                                {row.area}
+                            </span>
+                            <span className="font-mono text-[10px] font-bold text-ink/50 uppercase line-through">
+                                {row.standard}
+                            </span>
+                        </div>
+                        <div className="font-heading font-bold text-base sm:text-lg uppercase tracking-tight text-ink">
+                            ✓ {row.mine}
+                        </div>
                     </div>
                 ))}
             </div>

@@ -1,27 +1,36 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { CircuitPattern, GridDots } from "@/components/ui/Decorative";
-import { BookOpen, Flame, Sparkles, Bot, Code2, Cpu, Wrench } from "lucide-react";
+import { Flame, Sparkles, Bot, Code2, Cpu, Wrench } from "lucide-react";
 import Link from "next/link";
+import MobileSwipeStack, { type SwipeCardSlide } from "@/components/ui/MobileSwipeStack";
 
-/* Proficiency tag — categorical, not quantitative */
 type Depth = "daily" | "frequent" | "proficient";
 type Tool = { name: string; depth: Depth; detail: string };
-type Category = { name: string; color: string; textColor: string; icon: React.ReactNode; tools: Tool[] };
+type Category = {
+    code: string;
+    shortTab: string;
+    name: string;
+    jacketBg: string;
+    pillBg: string;
+    icon: React.ReactNode;
+    tools: Tool[];
+};
 
 const depthLabel: Record<Depth, string> = {
-    daily: "Primary Focus",
-    frequent: "Frequent",
-    proficient: "Proficient",
+    daily: "CORE DAILY",
+    frequent: "FREQUENT",
+    proficient: "PROFICIENT",
 };
 
 export const categories: Category[] = [
     {
+        code: "01",
+        shortTab: "01. AI",
         name: "AI & Intelligence",
-        color: "bg-acid",
-        textColor: "text-ink",
-        icon: <Bot size={24} className="text-ink" />,
+        jacketBg: "bg-acid text-ink",
+        pillBg: "bg-acid text-ink",
+        icon: <Bot size={22} className="text-ink" />,
         tools: [
             { name: "Generative AI", depth: "daily", detail: "LLM integration, conversational system design, and structured output handling." },
             { name: "Prompt Engineering", depth: "daily", detail: "Structured templates, few-shot prompting, and validation-guarded output generation." },
@@ -32,10 +41,12 @@ export const categories: Category[] = [
         ],
     },
     {
+        code: "02",
+        shortTab: "02. Auto",
         name: "Automation & APIs",
-        color: "bg-electric",
-        textColor: "text-cream",
-        icon: <Cpu size={24} className="text-cream" />,
+        jacketBg: "bg-electric text-cream",
+        pillBg: "bg-[#FFD60A] text-ink",
+        icon: <Cpu size={22} className="text-ink" />,
         tools: [
             { name: "n8n", depth: "daily", detail: "Visual workflow orchestration, automated node logic, and webhook handling." },
             { name: "Twilio WhatsApp API", depth: "daily", detail: "Building automated conversational interfaces and product dispatch flows." },
@@ -45,25 +56,29 @@ export const categories: Category[] = [
         ],
     },
     {
+        code: "03",
+        shortTab: "03. Web",
         name: "Programming & Frontend",
-        color: "bg-hotpink",
-        textColor: "text-cream",
-        icon: <Code2 size={24} className="text-cream" />,
+        jacketBg: "bg-[#FF2A6D] text-cream",
+        pillBg: "bg-acid text-ink",
+        icon: <Code2 size={22} className="text-ink" />,
         tools: [
             { name: "Python", depth: "daily", detail: "Core language for AI scripting, Streamlit apps, automation flows, and backend logic." },
-            { name: "JavaScript", depth: "daily", detail: "Modern ES6+ development for web applications and dynamic interfaces." },
+            { name: "JavaScript / TS", depth: "daily", detail: "Modern ES6+ & TypeScript development for web applications and dynamic interfaces." },
             { name: "React", depth: "frequent", detail: "Component-driven user interfaces, state management, and responsive layouts." },
             { name: "Next.js", depth: "frequent", detail: "App Router and full-stack web applications for products like WeArrange." },
-            { name: "Tailwind CSS & CSS3", depth: "daily", detail: "Utility-first modern styling, responsive layouts, and animations." },
+            { name: "Tailwind CSS & CSS3", depth: "daily", detail: "Utility-first modern styling, responsive layouts, and motion animations." },
             { name: "HTML5 & Semantic Web", depth: "daily", detail: "Clean document structure, accessibility standards, and SEO compliance." },
             { name: "SQL", depth: "proficient", detail: "Relational database queries, schema structuring, and data manipulation." },
         ],
     },
     {
+        code: "04",
+        shortTab: "04. Tools",
         name: "Developer Tools & Platforms",
-        color: "bg-vivid",
-        textColor: "text-cream",
-        icon: <Wrench size={24} className="text-cream" />,
+        jacketBg: "bg-vivid text-ink",
+        pillBg: "bg-[#FFD60A] text-ink",
+        icon: <Wrench size={22} className="text-ink" />,
         tools: [
             { name: "Git & GitHub", depth: "daily", detail: "Version control, open-source repositories, PR workflows, and branching." },
             { name: "Streamlit", depth: "daily", detail: "Rapid prototyping and live deployment for conversational AI and data applications." },
@@ -74,10 +89,10 @@ export const categories: Category[] = [
 ];
 
 export const learning = [
-    { name: "Multi-Agent Systems", reason: "Coordinated agent networks executing complex parallel workflows." },
-    { name: "Vector Search & Embeddings", reason: "Enhancing conversational context and intelligent document retrieval." },
-    { name: "Advanced Pipeline Optimization", reason: "Scaling throughput and fault tolerance across automated data flows." },
-    { name: "Full-Stack System Architecture", reason: "Deepening scalable backend designs for comprehensive software products." },
+    { name: "Multi-Agent Systems", reason: "Coordinated agent networks executing complex parallel workflows.", bg: "bg-acid text-ink" },
+    { name: "Vector Search & RAG", reason: "Enhancing conversational context and intelligent document retrieval.", bg: "bg-electric text-cream" },
+    { name: "Pipeline Optimization", reason: "Scaling throughput and fault tolerance across automated data flows.", bg: "bg-[#FF2A6D] text-cream" },
+    { name: "System Architecture", reason: "Deepening scalable backend designs for comprehensive software products.", bg: "bg-[#FFD60A] text-ink" },
 ];
 
 export function StatusBar() {
@@ -86,9 +101,11 @@ export function StatusBar() {
         <div className="w-full bg-ink border-b-[3px] border-ink py-2 px-4 md:px-8 flex justify-between items-center">
             <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-acid animate-pulse-dot" />
-                <span className="font-mono text-xs font-bold text-cream/70 uppercase tracking-widest">{"/// engineering stack"}</span>
+                <span className="font-mono text-xs font-extrabold text-cream uppercase tracking-widest">
+                    {"/// engineering stack"}
+                </span>
             </div>
-            <span className="font-mono text-xs font-bold text-cream/60 tracking-widest uppercase">
+            <span className="font-mono text-xs font-extrabold text-acid tracking-widest uppercase">
                 {total} TECHNOLOGIES · {categories.length} PILLARS
             </span>
         </div>
@@ -97,17 +114,19 @@ export function StatusBar() {
 
 export function HeaderSection() {
     return (
-        <section className="max-w-7xl mx-auto px-4 md:px-8 mt-8 md:mt-16 mb-8 md:mb-12">
+        <section className="max-w-7xl mx-auto px-4 md:px-8 mt-6 md:mt-14 mb-6 md:mb-12">
             <motion.div
-                initial={{ opacity: 0, x: -40 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6 }}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
             >
-                <div className="font-mono text-xs font-bold uppercase tracking-[0.3em] text-ink/60 mb-3">Technical Stack</div>
-                <h1 className="text-4xl sm:text-6xl md:text-[7rem] font-heading font-bold text-ink leading-[0.85] tracking-tighter uppercase mb-6">
-                    Engineering<br />Stack
+                <div className="inline-flex items-center gap-2 px-3 py-1 bg-acid text-ink border-[2px] border-ink shadow-[3px_3px_0px_#1A1A1A] font-mono text-[10px] font-extrabold uppercase tracking-[0.22em] mb-3">
+                    <Sparkles size={12} /> TECHNICAL ARSENAL // CARTRIDGE SPEC
+                </div>
+                <h1 className="text-4xl sm:text-6xl md:text-[6.5rem] font-heading font-bold text-ink leading-[0.88] tracking-tighter uppercase mb-4">
+                    Engineering Stack
                 </h1>
-                <p className="font-mono text-sm md:text-base text-ink/85 max-w-xl leading-relaxed">
+                <p className="font-mono text-xs sm:text-sm md:text-base text-ink/85 max-w-xl leading-relaxed">
                     Technologies, frameworks, and AI tools I use to build practical intelligent systems, automated workflows, and modern web products.
                 </p>
             </motion.div>
@@ -115,85 +134,168 @@ export function HeaderSection() {
     );
 }
 
-function DepthPill({ depth, textColor }: { depth: Depth; textColor: string }) {
-    const onDark = textColor === "text-cream";
+function DepthPill({ depth, pillBg }: { depth: Depth; pillBg: string }) {
     const styles: Record<Depth, string> = {
-        daily: onDark ? "bg-acid text-ink border-acid" : "bg-ink text-cream border-ink",
-        frequent: onDark ? "bg-cream/15 text-cream border-cream/30" : "bg-ink/10 text-ink border-ink/30",
-        proficient: onDark ? "bg-cream/5 text-cream/80 border-cream/20" : "bg-ink/5 text-ink/80 border-ink/20",
+        daily: `${pillBg} border-ink`,
+        frequent: "bg-ink text-cream border-ink",
+        proficient: "bg-cream text-ink border-ink",
     };
     return (
-        <span className={`inline-flex items-center px-2 py-0.5 border-2 font-mono text-[0.65rem] font-bold uppercase tracking-wider ${styles[depth]}`}>
+        <span className={`inline-flex items-center px-2 py-0.5 border-[1.5px] font-mono text-[9px] font-extrabold uppercase tracking-wider flex-shrink-0 ${styles[depth]}`}>
             {depthLabel[depth]}
         </span>
     );
 }
 
 export function CategoriesSection() {
-    return (
-        <section className="max-w-7xl mx-auto px-4 md:px-8 mb-12 md:mb-20 space-y-5">
-            {categories.map((cat, catIndex) => (
-                <div
-                    key={cat.name}
-                    className="reveal-up"
-                    style={{ animationDelay: `${Math.min(catIndex * 0.06, 0.4)}s` }}
-                >
-                    <div className={`neo-card ${cat.color} ${cat.textColor} p-6 md:p-8 relative overflow-hidden`}>
-                        {catIndex % 2 === 0 ? (
-                            <CircuitPattern className="absolute top-0 right-0 w-32 h-32 opacity-[0.08]" />
-                        ) : (
-                            <GridDots className="absolute top-0 right-0 w-32 h-32 opacity-[0.08]" />
-                        )}
+    const mobileCatSlides: SwipeCardSlide[] = categories.map((cat) => ({
+        id: cat.code,
+        tabLabel: `[${cat.code}] ${cat.shortTab.split(" ")[1]}`,
+        headerBg: cat.jacketBg,
+        badgeText: `PILLAR // ${cat.code}`,
+        statusText: `${cat.tools.length} TOOLS`,
+        content: (
+            <div className="space-y-2">
+                <h2 className="font-heading font-bold text-xl uppercase tracking-tight text-ink mb-1">
+                    {cat.name}
+                </h2>
+                <div className="space-y-2">
+                    {cat.tools.map((tool) => (
+                        <div key={tool.name} className="p-2.5 bg-[#F4F0E4] border-[2px] border-ink">
+                            <div className="flex items-center justify-between gap-2 mb-0.5">
+                                <span className="font-heading font-bold text-xs sm:text-sm uppercase tracking-tight text-ink">
+                                    {tool.name}
+                                </span>
+                                <DepthPill depth={tool.depth} pillBg={cat.pillBg} />
+                            </div>
+                            <p className="font-mono text-[11px] text-ink/80 leading-snug">
+                                {tool.detail}
+                            </p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        ),
+    }));
 
-                        <div className="relative z-10">
-                            <div className="flex items-center justify-between mb-6">
+    return (
+        <section className="max-w-7xl mx-auto px-4 md:px-8 mb-10 lg:mb-20">
+            {/* ─── MOBILE ONLY (< lg): 3D Tinder Swipe Stack for Stack Pillars [01]–[04] ─── */}
+            <div className="lg:hidden">
+                <MobileSwipeStack
+                    slides={mobileCatSlides}
+                    instructionLabel="SWIPE STACK PILLAR [01–04] ↔"
+                />
+            </div>
+
+            {/* ─── DESKTOP ONLY (lg+): Full 4-Pillar Cartridge Matrix (Unchanged) ─── */}
+            <div className="hidden lg:block space-y-6">
+                {categories.map((cat, catIndex) => (
+                    <div
+                        key={cat.name}
+                        className="reveal-up"
+                        style={{ animationDelay: `${Math.min(catIndex * 0.06, 0.4)}s` }}
+                    >
+                        <div className={`neo-card ${cat.jacketBg} p-4 md:p-5`}>
+                            <div className="flex items-center justify-between mb-4 px-1">
                                 <div className="flex items-center gap-3">
-                                    {cat.icon}
-                                    <h2 className="font-heading font-bold text-2xl md:text-3xl uppercase tracking-tight">{cat.name}</h2>
+                                    <span className="p-2 bg-cream border-[2px] border-ink shadow-[2px_2px_0px_#1A1A1A]">
+                                        {cat.icon}
+                                    </span>
+                                    <div>
+                                        <span className="font-mono text-[10px] font-extrabold uppercase tracking-widest block opacity-85">
+                                            PILLAR // {cat.code}
+                                        </span>
+                                        <h2 className="font-heading font-bold text-2xl md:text-3xl uppercase tracking-tight">
+                                            {cat.name}
+                                        </h2>
+                                    </div>
                                 </div>
-                                <span className="font-mono text-xs font-bold uppercase tracking-widest opacity-75">
-                                    {cat.tools.length} technologies
+                                <span className="px-3 py-1 bg-ink text-acid border-[2px] border-ink font-mono text-xs font-extrabold uppercase tracking-widest">
+                                    {cat.tools.length} Technologies
                                 </span>
                             </div>
 
-                            <div className="grid md:grid-cols-2 gap-x-8 gap-y-5">
+                            <div className="bg-cream text-ink border-[3px] border-ink p-5 md:p-6 grid md:grid-cols-2 gap-4">
                                 {cat.tools.map((tool) => (
-                                    <div key={tool.name} className="flex flex-col gap-1.5 p-3 bg-black/10 border border-current/10">
+                                    <div key={tool.name} className="flex flex-col gap-1.5 p-3.5 bg-[#F4F0E4] border-[2px] border-ink shadow-[3px_3px_0px_#1A1A1A]">
                                         <div className="flex items-center justify-between gap-3">
-                                            <span className="font-heading font-bold text-sm md:text-base uppercase tracking-tight">{tool.name}</span>
-                                            <DepthPill depth={tool.depth} textColor={cat.textColor} />
+                                            <span className="font-heading font-bold text-base uppercase tracking-tight text-ink">
+                                                {tool.name}
+                                            </span>
+                                            <DepthPill depth={tool.depth} pillBg={cat.pillBg} />
                                         </div>
-                                        <p className="font-mono text-xs md:text-sm opacity-85 leading-relaxed">{tool.detail}</p>
+                                        <p className="font-mono text-xs sm:text-sm text-ink/80 leading-relaxed">
+                                            {tool.detail}
+                                        </p>
                                     </div>
                                 ))}
                             </div>
                         </div>
                     </div>
-                </div>
-            ))}
+                ))}
+            </div>
         </section>
     );
 }
 
 export function CurrentlyLearningSection() {
-    return (
-        <section className="max-w-7xl mx-auto px-4 md:px-8 mb-12 md:mb-20 reveal-up">
-            <div className="flex items-center gap-2 mb-2">
-                <Flame size={16} className="text-hotpink" />
-                <div className="font-mono text-xs font-bold uppercase tracking-[0.3em] text-ink/60">Active Exploration</div>
+    const mobileLearnSlides: SwipeCardSlide[] = learning.map((item, i) => ({
+        id: `0${i + 1}`,
+        tabLabel: `[0${i + 1}] ${item.name.split(" ")[0]}`,
+        headerBg: item.bg,
+        badgeText: `R&D // 0${i + 1}`,
+        statusText: "EXPLORING",
+        content: (
+            <div>
+                <h3 className="font-heading font-bold text-lg uppercase tracking-tight text-ink mb-1.5">
+                    {item.name}
+                </h3>
+                <p className="font-mono text-xs text-ink/85 leading-relaxed">
+                    {item.reason}
+                </p>
             </div>
-            <h2 className="font-heading font-bold text-3xl md:text-4xl uppercase tracking-tight text-ink mb-6">Currently Exploring</h2>
+        ),
+    }));
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+    return (
+        <section className="max-w-7xl mx-auto px-4 md:px-8 mb-10 lg:mb-20 reveal-up">
+            <div className="flex items-center gap-2 mb-1.5">
+                <Flame size={16} className="text-vivid" />
+                <div className="font-mono text-xs font-extrabold uppercase tracking-[0.3em] text-ink/65">
+                    Active R&amp;D Exploration
+                </div>
+            </div>
+            <h2 className="font-heading font-bold text-3xl md:text-4xl uppercase tracking-tight text-ink mb-4 lg:mb-6">
+                Currently Exploring
+            </h2>
+
+            {/* ─── MOBILE ONLY (< lg): 3D Tinder Swipe Stack for R&D [01]–[04] ─── */}
+            <div className="lg:hidden">
+                <MobileSwipeStack
+                    slides={mobileLearnSlides}
+                    instructionLabel="SWIPE R&D [01–04] ↔"
+                />
+            </div>
+
+            {/* ─── DESKTOP ONLY (lg+): 4-Column Grid (Unchanged) ─── */}
+            <div className="hidden lg:grid lg:grid-cols-4 gap-4">
                 {learning.map((item, i) => (
                     <div key={item.name} className="reveal-up" style={{ animationDelay: `${Math.min(i * 0.06, 0.4)}s` }}>
-                        <div className="neo-card bg-cream p-5 h-full group hover:bg-ink hover:text-cream transition-all flex flex-col justify-between">
-                            <div>
-                                <div className="flex items-center gap-2 mb-2">
-                                    <Sparkles size={16} className="opacity-60 group-hover:text-acid" />
-                                    <h3 className="font-heading font-bold text-base uppercase tracking-tight">{item.name}</h3>
-                                </div>
-                                <p className="font-mono text-xs opacity-80 leading-relaxed">{item.reason}</p>
+                        <div className="neo-card bg-cream text-ink h-full overflow-hidden flex flex-col justify-between">
+                            <div className={`${item.bg} px-4 py-2 border-b-[2.5px] border-ink flex items-center justify-between`}>
+                                <span className="font-mono text-[10px] font-extrabold uppercase tracking-wider">
+                                    R&amp;D // 0{i + 1}
+                                </span>
+                                <Sparkles size={14} />
+                            </div>
+                            <div className="p-4 flex-1">
+                                <h3 className="font-heading font-bold text-base uppercase tracking-tight text-ink mb-1.5">
+                                    {item.name}
+                                </h3>
+                                <p className="font-mono text-xs text-ink/80 leading-relaxed">
+                                    {item.reason}
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -206,18 +308,17 @@ export function CurrentlyLearningSection() {
 export function CTASection() {
     return (
         <section className="max-w-7xl mx-auto px-4 md:px-8 mb-12 reveal-up">
-            <div className="neo-card bg-ink text-cream p-8 md:p-12 text-center relative overflow-hidden gradient-top-accent">
-                <GridDots className="absolute inset-0 w-full h-full text-cream/5" />
-                <div className="relative z-10">
-                    <h2 className="font-heading font-bold text-3xl md:text-5xl uppercase tracking-tight mb-4">
+            <div className="neo-card bg-vivid text-ink p-4 sm:p-6">
+                <div className="bg-ink text-cream border-[3px] border-ink p-6 md:p-10 text-center">
+                    <h2 className="font-heading font-bold text-3xl md:text-5xl uppercase tracking-tight text-cream mb-3">
                         Let&apos;s build something <span className="text-acid">impactful.</span>
                     </h2>
-                    <p className="font-mono text-sm text-cream/80 max-w-lg mx-auto mb-8 leading-relaxed">
-                        Ready to collaborate on Generative AI systems, automation workflows, or software development.
+                    <p className="font-mono text-xs sm:text-sm text-cream/80 max-w-lg mx-auto mb-6 leading-relaxed">
+                        Ready to collaborate on Generative AI systems, automation workflows, or full-stack software development.
                     </p>
                     <Link
                         href="/contact"
-                        className="inline-block bg-acid text-ink font-heading font-bold text-lg uppercase tracking-wider px-8 py-4 border-[3px] border-ink shadow-neo hover:shadow-none hover:translate-x-[6px] hover:translate-y-[6px] transition-all"
+                        className="inline-block bg-acid hover:bg-[#FFD60A] text-ink font-heading font-bold text-base sm:text-lg uppercase tracking-wider px-7 py-3.5 border-[3px] border-cream shadow-[4px_4px_0px_#FFFDF5] transition-all"
                     >
                         Let&apos;s Connect →
                     </Link>

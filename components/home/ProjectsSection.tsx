@@ -1,174 +1,293 @@
 "use client";
 
-import { ArrowUpRight } from "lucide-react";
+import { useState } from "react";
+import { ArrowUpRight, ExternalLink, Github, FolderOpen, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { projects } from "@/lib/projects";
-import { CircuitPattern, CrossHatch } from "@/components/ui/Decorative";
 import TiltCard from "@/components/ui/TiltCard";
+import MobileTinderDeck, { type TinderCardItem } from "@/components/ui/MobileTinderDeck";
 
-interface FeaturedCardData {
+type FilterKey = "all" | "ai" | "automation" | "products" | "web";
+
+interface FeaturedFolderData {
+    id: string;
     slug: string;
+    division: FilterKey;
     status: string;
     category: string;
     title: string;
     description: string;
+    architectureFlow: string;
     tags: string[];
-    bgClass: string;
-    textClass: string;
-    tagBgClass: string;
-    tagTextClass: string;
-    glowClass?: string;
-    decorative?: "crosshatch" | "circuit" | null;
+    jacketBg: string;
+    tabBg: string;
+    tabText: string;
+    accentPillBg: string;
+    liveUrl?: string;
+    repoUrl?: string;
 }
 
-const featuredList: FeaturedCardData[] = [
+const featuredFolders: FeaturedFolderData[] = [
     {
+        id: "001",
         slug: "legal-ai-agent",
-        status: "LIVE APPLICATION",
-        category: "Generative AI",
+        division: "ai",
+        status: "LIVE ON STREAMLIT",
+        category: "Generative AI · Conversational",
         title: "Legal AI Agent",
-        description: "Conversational AI assistant for exploring legal information workflows.",
-        tags: ["Python", "Streamlit", "Generative AI"],
-        bgClass: "bg-acid",
-        textClass: "text-ink",
-        tagBgClass: "bg-ink/10 border-ink/30",
-        tagTextClass: "text-ink",
-        glowClass: "neo-glow",
-        decorative: "crosshatch",
+        description:
+            "Experimental conversational AI assistant engineered with Python and Streamlit for structured legal query synthesis and prompt-guarded reasoning.",
+        architectureFlow: "Query → Prompt Guard → LLM Reasoning → Structured Output",
+        tags: ["Python", "Streamlit", "Generative AI", "Prompt Engineering"],
+        jacketBg: "bg-acid text-ink",
+        tabBg: "bg-acid",
+        tabText: "text-ink",
+        accentPillBg: "bg-acid text-ink",
+        liveUrl: "https://legal-ai-agent-vdypr3xqmd6cvk7tr8d2r9.streamlit.app/",
+        repoUrl: "https://github.com/nandu-reddy-kalluri/legal-ai-agent",
     },
     {
+        id: "002",
         slug: "wearrange",
-        status: "BUILDING",
-        category: "Full-Stack Product",
+        division: "products",
+        status: "BUILDING · FULL-STACK",
+        category: "Full-Stack Product · Next.js",
         title: "WeArrange",
-        description: "Wedding venue discovery and planning platform in development.",
-        tags: ["Next.js", "React", "TypeScript"],
-        bgClass: "bg-hotpink",
-        textClass: "text-cream",
-        tagBgClass: "bg-ink/20 border-cream/30",
-        tagTextClass: "text-cream",
-        glowClass: "neo-glow",
-        decorative: "circuit",
+        description:
+            "End-to-end wedding venue discovery and comparison platform featuring transparent pricing breakdowns, multi-attribute filtering, and planning workflows.",
+        architectureFlow: "Next.js Client → API Routes → Venue Engine → Comparison UI",
+        tags: ["Next.js 14", "React", "TypeScript", "Tailwind CSS"],
+        jacketBg: "bg-[#FF2A6D] text-cream",
+        tabBg: "bg-[#FF2A6D]",
+        tabText: "text-cream",
+        accentPillBg: "bg-[#FFD60A] text-ink",
     },
     {
+        id: "003",
         slug: "whatsapp-ai-chatbot",
-        status: "AUTOMATION",
-        category: "Workflows",
+        division: "automation",
+        status: "WORKFLOW AUTOMATION",
+        category: "AI Automation · n8n + Gemini",
         title: "AI WhatsApp Product Bot",
-        description: "AI-powered product recommendations through WhatsApp.",
-        tags: ["Google Gemini", "Twilio", "n8n"],
-        bgClass: "bg-electric",
-        textClass: "text-cream",
-        tagBgClass: "bg-ink/20 border-cream/30",
-        tagTextClass: "text-cream",
-        glowClass: "neo-glow-blue",
-        decorative: null,
+        description:
+            "Automated conversational commerce pipeline connecting Twilio WhatsApp webhooks, n8n workflow nodes, and Google Gemini AI for instant product matching.",
+        architectureFlow: "WhatsApp → Twilio Webhook → n8n Node → Gemini AI → Reply",
+        tags: ["Google Gemini", "Twilio API", "n8n", "Webhooks"],
+        jacketBg: "bg-electric text-cream",
+        tabBg: "bg-electric",
+        tabText: "text-cream",
+        accentPillBg: "bg-acid text-ink",
     },
     {
+        id: "004",
         slug: "cup-cozy",
+        division: "web",
         status: "LIVE ON VERCEL",
-        category: "Frontend Design",
+        category: "Frontend Craft · Web UI/UX",
         title: "Cup Cozy",
-        description: "Responsive web experience focused on polished frontend design.",
-        tags: ["HTML", "CSS", "JavaScript"],
-        bgClass: "bg-vivid",
-        textClass: "text-cream",
-        tagBgClass: "bg-ink/20 border-cream/30",
-        tagTextClass: "text-cream",
-        glowClass: "",
-        decorative: null,
+        description:
+            "Polished responsive web product demonstrating high-contrast visual storytelling, fluid mobile-to-desktop grid layouts, and fast edge performance.",
+        architectureFlow: "Semantic DOM → Fluid Grid Engine → Interactive UI → Vercel Edge",
+        tags: ["HTML5", "CSS3", "JavaScript", "Responsive UI/UX"],
+        jacketBg: "bg-vivid text-ink",
+        tabBg: "bg-[#FFD60A]",
+        tabText: "text-ink",
+        accentPillBg: "bg-[#FFD60A] text-ink",
+        liveUrl: "https://cup-cozy-site.vercel.app/",
+        repoUrl: "https://github.com/nandu-reddy-kalluri/CUP-COZY",
     },
 ];
 
+const filterButtons: { key: FilterKey; label: string; color: string }[] = [
+    { key: "all", label: "All Files (04)", color: "bg-acid text-ink" },
+    { key: "ai", label: "Gen-AI", color: "bg-[#FFD60A] text-ink" },
+    { key: "automation", label: "Automation", color: "bg-electric text-cream" },
+    { key: "products", label: "Full-Stack", color: "bg-[#FF2A6D] text-cream" },
+    { key: "web", label: "Frontend Web", color: "bg-vivid text-ink" },
+];
+
 export function ProjectsSection() {
+    const [activeFilter, setActiveFilter] = useState<FilterKey>("all");
+
+    const visibleProjects =
+        activeFilter === "all"
+            ? featuredFolders
+            : featuredFolders.filter((p) => p.division === activeFilter);
+
+    const mobileTinderItems: TinderCardItem[] = visibleProjects.map((p) => ({
+        id: p.id,
+        slug: p.slug,
+        status: p.status,
+        category: p.category,
+        title: p.title,
+        description: p.description,
+        architectureFlow: p.architectureFlow,
+        tags: p.tags,
+        headerBg: p.jacketBg,
+        pillBg: p.accentPillBg,
+        liveUrl: p.liveUrl,
+        repoUrl: p.repoUrl,
+    }));
+
     return (
-        <section className="max-w-7xl mx-auto px-4 md:px-8 mb-10 md:mb-16">
-            {/* Section Header */}
-            <div className="flex items-end justify-between mb-5 md:mb-6 reveal-up">
-                <div>
-                    <div className="font-mono text-[11px] md:text-xs font-bold uppercase tracking-[0.3em] text-ink/60 mb-1.5">
-                        Selected Engineering Work
+        <section id="projects" className="max-w-7xl mx-auto px-4 md:px-8 mb-10 lg:mb-24">
+            {/* Section Header + Interactive Folder Filter Tabs */}
+            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-3 mb-5 lg:mb-8 reveal-up">
+                <div className="flex items-end justify-between gap-2">
+                    <div>
+                        <div className="inline-flex items-center gap-2 font-mono text-xs font-extrabold uppercase tracking-[0.25em] text-ink/70 mb-1.5">
+                            <FolderOpen size={15} className="text-vivid" />
+                            <span>Selected Engineering Dossiers</span>
+                        </div>
+                        <h2 className="font-heading font-extrabold text-3xl sm:text-4xl md:text-5xl uppercase tracking-tight text-ink">
+                            Featured Case Files
+                        </h2>
                     </div>
-                    <h2 className="font-heading font-bold text-2xl sm:text-3xl md:text-4xl uppercase tracking-tight text-ink">
-                        Featured Projects
-                    </h2>
+
+                    <Link
+                        href="/work"
+                        className="lg:hidden font-mono text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1.5 border-[2px] border-ink bg-ink text-acid inline-flex items-center gap-1 flex-shrink-0"
+                    >
+                        <span>All ({projects.length})</span>
+                        <ArrowUpRight size={12} />
+                    </Link>
                 </div>
-                <Link
-                    href="/work"
-                    className="font-mono text-xs md:text-sm font-bold uppercase tracking-wider text-ink hover:text-electric transition-colors flex items-center gap-1 group pb-0.5"
-                >
-                    View All Work ({projects.length})
-                    <ArrowUpRight size={15} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                </Link>
+
+                {/* Interactive Filter Switcher (Desktop lg+) */}
+                <div className="hidden lg:flex flex-wrap items-center gap-2">
+                    {filterButtons.map((btn) => {
+                        const isActive = activeFilter === btn.key;
+                        return (
+                            <button
+                                key={btn.key}
+                                type="button"
+                                onClick={() => setActiveFilter(btn.key)}
+                                className={`font-mono text-xs font-extrabold uppercase tracking-wider px-3 py-1.5 border-[2px] border-ink transition-all ${
+                                    isActive
+                                        ? `${btn.color} shadow-[3px_3px_0px_0px_#1A1A1A] -translate-y-0.5`
+                                        : "bg-cream text-ink hover:bg-ink/5"
+                                }`}
+                            >
+                                {btn.label}
+                            </button>
+                        );
+                    })}
+
+                    <Link
+                        href="/work"
+                        className="font-mono text-xs font-extrabold uppercase tracking-wider px-3 py-1.5 border-[2px] border-ink bg-ink text-acid hover:bg-acid hover:text-ink transition-colors inline-flex items-center gap-1"
+                    >
+                        <span>All Archive ({projects.length})</span>
+                        <ArrowUpRight size={13} />
+                    </Link>
+                </div>
             </div>
 
-            {/* 2x2 Compact Bento Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
-                {featuredList.map((item) => (
-                    <TiltCard key={item.slug} intensity={8} glare={true} className="h-full">
-                        <div
-                            className={`neo-card ${item.bgClass} ${item.textClass} p-5 md:p-6 flex flex-col justify-between relative overflow-hidden group ${item.glowClass} reveal-up min-h-[240px] md:min-h-[270px] h-full`}
-                        >
-                            {item.decorative === "crosshatch" && (
-                                <CrossHatch className="absolute top-0 right-0 w-28 h-28 text-ink opacity-10 pointer-events-none" />
-                            )}
-                            {item.decorative === "circuit" && (
-                                <CircuitPattern className="absolute top-0 right-0 w-28 h-28 text-cream opacity-10 pointer-events-none" />
-                            )}
+            {/* ─── MOBILE ONLY (< lg): Tinder-Style Sliding / Swiping Card Deck ─── */}
+            <div className="lg:hidden">
+                <MobileTinderDeck items={mobileTinderItems} />
+            </div>
 
-                            <div className="relative z-10">
-                                {/* 1. Status / Category */}
-                                <div className="flex items-center justify-between gap-2 mb-2.5">
-                                    <div className="flex items-center gap-1.5">
-                                        <span className="w-2 h-2 rounded-full bg-current animate-pulse-dot" />
-                                        <span className="font-mono text-[10px] md:text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 bg-ink text-cream">
-                                            ● {item.status}
-                                        </span>
-                                    </div>
-                                    <span className="font-mono text-[10px] md:text-[11px] font-bold uppercase tracking-widest opacity-75">
-                                        {item.category}
-                                    </span>
-                                </div>
-
-                                {/* 2. Project Title */}
-                                <h3 className="font-heading font-bold text-xl sm:text-2xl md:text-[1.75rem] uppercase tracking-tight leading-tight mb-2">
-                                    <Link
-                                        href={`/work/${item.slug}`}
-                                        className="hover:underline underline-offset-4 transition-all inline-block"
-                                    >
-                                        {item.title}
-                                    </Link>
-                                </h3>
-
-                                {/* 3. Short 1-2 line description */}
-                                <p className="font-mono text-xs md:text-sm opacity-90 leading-relaxed max-w-lg mb-4">
-                                    {item.description}
-                                </p>
-
-                                {/* 4. Limited Tech Tags (3-4 max) */}
-                                <div className="flex flex-wrap gap-1.5 mb-4">
-                                    {item.tags.map((tag) => (
-                                        <span
-                                            key={tag}
-                                            className={`px-2 py-0.5 border ${item.tagBgClass} ${item.tagTextClass} font-mono text-[10px] md:text-[11px] font-bold uppercase`}
-                                        >
-                                            {tag}
-                                        </span>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* 5. Minimal Single Action Link */}
-                            <div className="relative z-10 pt-3 border-t border-current/20 flex items-center justify-end">
-                                <Link
-                                    href={`/work/${item.slug}`}
-                                    className="font-mono text-xs font-bold uppercase tracking-wider inline-flex items-center gap-1.5 hover:translate-x-0.5 transition-transform"
+            {/* ─── DESKTOP ONLY (lg+): 2x2 Tactile File Folder Grid ─── */}
+            <div className="hidden lg:grid lg:grid-cols-2 gap-6 md:gap-8">
+                {visibleProjects.map((item) => (
+                    <TiltCard key={item.slug} intensity={6} glare={false} className="h-full">
+                        <article className="h-full flex flex-col group">
+                            <div className="flex items-end justify-between pr-2 -mb-[3px] relative z-10">
+                                <div
+                                    className={`${item.tabBg} ${item.tabText} border-[3px] border-ink rounded-t-xl px-4 py-1.5 flex items-center gap-2 shadow-neo-sm`}
                                 >
-                                    <span>View Project</span>
-                                    <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                                </Link>
+                                    <span className="font-mono text-xs font-extrabold uppercase tracking-wider">
+                                        FILE // {item.id}
+                                    </span>
+                                    <span className="w-2 h-2 rounded-full bg-current animate-pulse" />
+                                </div>
+
+                                <span className="font-mono text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 bg-ink text-acid border-[2px] border-ink mb-1">
+                                    ● {item.status}
+                                </span>
                             </div>
-                        </div>
+
+                            <div
+                                className={`neo-card ${item.jacketBg} p-3 sm:p-4 flex-1 flex flex-col justify-between relative z-20`}
+                            >
+                                <div className="bg-cream text-ink border-[3px] border-ink p-4 sm:p-6 flex-1 flex flex-col justify-between relative">
+                                    <div>
+                                        <div className="flex items-center justify-between gap-2 mb-2">
+                                            <span className="font-mono text-[10px] sm:text-xs font-extrabold uppercase tracking-wider text-ink/70">
+                                                {item.category}
+                                            </span>
+                                            <Sparkles size={14} className="text-vivid flex-shrink-0" />
+                                        </div>
+
+                                        <h3 className="font-heading font-extrabold text-2xl sm:text-3xl uppercase tracking-tight text-ink mb-2.5 group-hover:text-electric transition-colors">
+                                            <Link href={`/work/${item.slug}`} className="hover:underline underline-offset-4">
+                                                {item.title}
+                                            </Link>
+                                        </h3>
+
+                                        <p className="font-mono text-xs sm:text-sm text-ink/85 leading-relaxed mb-4">
+                                            {item.description}
+                                        </p>
+
+                                        <div className="bg-ink text-cream border-[2px] border-ink p-2.5 mb-4">
+                                            <div className="font-mono text-[9px] font-extrabold uppercase tracking-widest text-acid mb-1">
+                                                SYSTEM PIPELINE FLOW:
+                                            </div>
+                                            <div className="font-mono text-[11px] font-bold text-cream break-words">
+                                                {item.architectureFlow}
+                                            </div>
+                                        </div>
+
+                                        <div className="flex flex-wrap gap-1.5 mb-5">
+                                            {item.tags.map((tag) => (
+                                                <span
+                                                    key={tag}
+                                                    className={`px-2.5 py-0.5 border-[2px] border-ink font-mono text-[10px] font-extrabold uppercase ${item.accentPillBg}`}
+                                                >
+                                                    {tag}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div className="pt-3.5 border-t-[2px] border-ink/15 flex flex-wrap items-center justify-between gap-2">
+                                        <Link
+                                            href={`/work/${item.slug}`}
+                                            className="bg-ink text-cream hover:bg-acid hover:text-ink border-[2px] border-ink px-3.5 py-2 font-mono text-xs font-extrabold uppercase tracking-wider inline-flex items-center gap-1.5 transition-colors"
+                                        >
+                                            <span>Open Case Study</span>
+                                            <ArrowUpRight size={14} />
+                                        </Link>
+
+                                        <div className="flex items-center gap-2">
+                                            {item.liveUrl && (
+                                                <a
+                                                    href={item.liveUrl}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="bg-acid text-ink hover:bg-vivid border-[2px] border-ink px-3 py-2 font-mono text-xs font-extrabold uppercase tracking-wider inline-flex items-center gap-1 transition-colors"
+                                                >
+                                                    <span>Live Demo</span>
+                                                    <ExternalLink size={12} />
+                                                </a>
+                                            )}
+                                            {item.repoUrl && (
+                                                <a
+                                                    href={item.repoUrl}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    aria-label={`${item.title} GitHub Source`}
+                                                    className="bg-cream text-ink hover:bg-ink hover:text-cream border-[2px] border-ink p-2 inline-flex items-center justify-center transition-colors"
+                                                >
+                                                    <Github size={15} />
+                                                </a>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
                     </TiltCard>
                 ))}
             </div>

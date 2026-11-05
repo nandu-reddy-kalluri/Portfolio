@@ -1,8 +1,6 @@
 export const themeScript = `(function() {
     try {
-        var saved = localStorage.getItem("theme");
-        if (saved) {
-            document.documentElement.setAttribute("data-theme", saved);
-        }
+        localStorage.removeItem("theme");
+        document.documentElement.removeAttribute("data-theme");
     } catch (e) {}
 })()`;

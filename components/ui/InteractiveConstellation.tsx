@@ -31,6 +31,12 @@ export default function InteractiveConstellation({
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
 
+        const isMobileDevice = window.innerWidth < 768;
+        if (isMobileDevice) {
+            // Skip continuous animation loop on mobile to preserve main-thread performance and battery
+            return;
+        }
+
         let animationFrameId: number;
         let width = (canvas.width = canvas.parentElement?.clientWidth || window.innerWidth);
         let height = (canvas.height = canvas.parentElement?.clientHeight || window.innerHeight);
@@ -42,7 +48,7 @@ export default function InteractiveConstellation({
             "rgba(255, 51, 153, 0.6)",  // hotpink
         ];
 
-        const nodeCount = Math.min(Math.floor((width * height) / 24000), density);
+        const nodeCount = Math.min(Math.floor((width * height) / 30000), density);
         const nodes: Node[] = [];
 
         for (let i = 0; i < nodeCount; i++) {
